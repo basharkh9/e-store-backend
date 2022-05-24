@@ -59,12 +59,12 @@ const Booking = mongoose.model(
 );
 
 function validateBooking(booking) {
-  const schema = {
+  const schema = Joi.object({
     customerId: Joi.string().required(),
     productId: Joi.string().required(),
-  };
+  });
 
-  return Joi.validate(booking, schema);
+  return schema.validate(booking);
 }
 
 exports.Booking = Booking;

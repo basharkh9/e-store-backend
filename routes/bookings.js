@@ -2,11 +2,14 @@ const { Booking, validate } = require("../models/booking");
 const { Product } = require("../models/product");
 const { Customer } = require("../models/customer");
 const mongoose = require("mongoose");
+const Fawn = require("fawn");
 const express = require("express");
 const router = express.Router();
 
+Fawn.init("mongodb://localhost/e-store");
+
 router.get("/", async (req, res) => {
-  const bookings = await Rental.find().sort("-dateOut");
+  const bookings = await Booking.find().sort("-dateOut");
   res.send(bookings);
 });
 
@@ -35,10 +38,20 @@ router.post("/", async (req, res) => {
       rate: product.rate,
     },
   });
-  booking = await booking.save();
-
-  product.numberInStock--;
-  product.save();
+  try {
+    new Fawn.Task()
+      .save("bookings", booking)
+      .update(
+        "products",
+        { _id: product._id },
+        {
+          $inc: { numberInStock: -1 },
+        }
+      )
+      .run();
+  } catch (ex) {
+    res.status(500).send("Something failed.");
+  }
 
   res.send(booking);
 });
