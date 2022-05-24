@@ -6,6 +6,7 @@ const categories = require("./routes/categories");
 const customers = require("./routes/customers");
 const products = require("./routes/products");
 const bookings = require("./routes/bookings");
+const users = require("./routes/users");
 const app = express();
 
 mongoose
@@ -18,6 +19,7 @@ app.use("/api/categories", categories);
 app.use("/api/customers", customers);
 app.use("/api/products", products);
 app.use("/api/bookings", bookings);
+app.use("/api/users", users);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Listening on port ${PORT}...`));
