@@ -1,4 +1,5 @@
 const auth = require("../middleware/auth");
+const admin = require("../middleware/admin");
 const { Category, validate } = require("../models/category");
 const mongoose = require("mongoose");
 const Joi = require("joi");
@@ -37,7 +38,7 @@ router.put("/:id", async (req, res) => {
   res.send(category);
 });
 
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", [auth, admin], async (req, res) => {
   const category = await Category.findByIdAndRemove(req.params.id);
 
   if (!category)
