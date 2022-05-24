@@ -1,56 +1,68 @@
+const mongoose = require("mongoose");
 const Joi = require("joi");
 const express = require("express");
 const router = express.Router();
 
-const categories = [
-  { id: 1, name: "PC" },
-  { id: 2, name: "Laptop" },
-  { id: 3, name: "Mobile" },
-];
+const categorySchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: true,
+    minlength: 5,
+    maxlength: 50,
+  },
+});
 
-router.get("/", (req, res) => {
+const Category = mongoose.model("Category", categorySchema);
+
+router.get("/", async (req, res) => {
+  const categories = await Category.find().sort("name");
   res.send(categories);
 });
 
-router.post("/", (req, res) => {
+router.post("/", async (req, res) => {
   const { error } = validateCategory(req.body);
   if (error) return res.status(400).send(error.details[0].message);
 
-  const category = {
-    id: categories.length + 1,
-    name: req.body.name,
-  };
-  categories.push(category);
+  let category = new Category({ name: req.body.name });
+  category = await category.save();
   res.send(category);
 });
 
-router.put("/:id", (req, res) => {
-  const category = categories.find((c) => c.id === parseInt(req.params.id));
-  if (!category)
-    return res.status(404).send("The genre with the given ID was not found.");
-
+router.put("/:id", async (req, res) => {
   const { error } = validateCategory(req.body);
   if (error) return res.status(400).send(error.details[0].message);
 
-  category.name = req.body.name;
+  const category = await Category.findByIdAndUpdate(
+    req.params.id,
+    { name: req.body.name },
+    { new: true }
+  );
+
+  if (!category)
+    return res
+      .status(404)
+      .send("The Category with the given ID was not found.");
+
   res.send(category);
 });
 
-router.delete("/:id", (req, res) => {
-  const genre = categories.find((c) => c.id === parseInt(req.params.id));
-  if (!genre)
-    return res.status(404).send("The genre with the given ID was not found.");
+router.delete("/:id", async (req, res) => {
+  const category = await Category.findByIdAndRemove(req.params.id);
 
-  const index = categories.indexOf(genre);
-  categories.splice(index, 1);
+  if (!category)
+    return res
+      .status(404)
+      .send("The Category with the given ID was not found.");
 
-  res.send(genre);
+  res.send(category);
 });
 
-router.get("/:id", (req, res) => {
-  const category = categories.find((c) => c.id === parseInt(req.params.id));
+router.get("/:id", async (req, res) => {
+  const category = await Category.findById(req.params.id);
   if (!category)
-    return res.status(404).send("The genre with the given ID was not found.");
+    return res
+      .status(404)
+      .send("The Category with the given ID was not found.");
   res.send(category);
 });
 
