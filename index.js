@@ -7,6 +7,7 @@ const customers = require("./routes/customers");
 const products = require("./routes/products");
 const bookings = require("./routes/bookings");
 const users = require("./routes/users");
+const auth = require("./routes/auth");
 const app = express();
 
 mongoose
@@ -20,6 +21,7 @@ app.use("/api/customers", customers);
 app.use("/api/products", products);
 app.use("/api/bookings", bookings);
 app.use("/api/users", users);
+app.use("/api/auth", auth);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Listening on port ${PORT}...`));
