@@ -1,4 +1,5 @@
 const Joi = require("joi");
+Joi.objectId = require("joi-objectid")(Joi);
 const mongoose = require("mongoose");
 const { categorySchema } = require("./category");
 
@@ -34,7 +35,7 @@ const Product = mongoose.model(
 function validateProduct(product) {
   const schema = Joi.object({
     name: Joi.string().min(3).max(50).required(),
-    categoryId: Joi.required(),
+    categoryId: Joi.objectId().required(),
     numberInStock: Joi.number().min(0).required(),
     rate: Joi.number().min(0).max(5).required(),
   });
