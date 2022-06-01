@@ -3,4 +3,4 @@ on linux execute the following on terminal:
 
 export estore_jwtPrivateKey=mySecureKey
 
-the run yarn && node index.js
+then run yarn && node index.js
